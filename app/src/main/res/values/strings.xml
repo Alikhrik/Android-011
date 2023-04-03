@@ -1,7 +1,18 @@
 <resources>
     <string name="app_name">Android-011</string>
+    
     <!-- Main Activity -->
     <string name="title_text">Android basics</string>
     <string name="button_calc_text">Calculator</string>
     <string name="button_del_name">DEL !</string>
+
+    <!--  Calc Activity  -->
+    <string name="calc_btn_percent_text">%</string>
+    <string name="calc_btn_ce_text">CE</string>
+    <string name="calc_btn_clear_text">C</string>
+    <string name="calc_btn_backspace_text">\u232B</string>
+    <string name="calc_btn_inverse_text">1/x</string>
+    <string name="calc_btn_square_text">x\u00B2</string>
+    <string name="calc_btn_root_text">\u221Ax</string>
+    <string name="calc_btn_divide_text">/</string>
 </resources>

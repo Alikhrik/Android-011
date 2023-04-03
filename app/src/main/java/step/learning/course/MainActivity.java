@@ -2,6 +2,7 @@ package step.learning.course;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -21,7 +22,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void buttonCalcClick( View view ) {
-
+        Intent activityIntent = new Intent( MainActivity.this, CalcActivity.class );
+        startActivity( activityIntent );
     }
 
     private void buttonADDClick( View view ) {
