@@ -1,12 +1,15 @@
 package step.learning.course;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class CalcActivity extends AppCompatActivity {
 
@@ -15,6 +18,8 @@ public class CalcActivity extends AppCompatActivity {
     private String minusSign;
     private String zeroSymbol;
     private String decimalPoint;
+
+    private boolean needClean;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,8 +47,84 @@ public class CalcActivity extends AppCompatActivity {
         findViewById( R.id.calc_btn_backspace ).setOnClickListener( this::backspaceClick );
         findViewById( R.id.calc_btn_plus_minus ).setOnClickListener( this::plusMinusClick );
         findViewById( R.id.calc_btn_comma ).setOnClickListener( this::decimalPointClick );
+        findViewById( R.id.calc_btn_clear ).setOnClickListener( this::clearClick );
+        findViewById( R.id.calc_btn_ce ).setOnClickListener( this::clearEditClick );
+        findViewById( R.id.calc_btn_square ).setOnClickListener( this::squareClick );
+        findViewById( R.id.calc_btn_inverse ).setOnClickListener( this::inverseClick );
     }
 
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle savingState) {
+        super.onSaveInstanceState(savingState);
+        Log.d( "CalcActivity", "onSaveInstanceState" );
+        System.out.println("i form onSaveInstanceState");
+        savingState.putCharSequence( "history", tvHistory.getText() );
+        savingState.putCharSequence( "result", tvResult.getText() );
+        savingState.putBoolean( "needClean", needClean);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedState) {
+        super.onRestoreInstanceState(savedState);
+        Log.d( "CalcActivity", "onRestoreInstanceState" );
+        System.out.println("i form onRestoreInstanceState");
+        tvHistory.setText( savedState.getCharSequence("history") );
+        tvResult.setText( savedState.getCharSequence("result") );
+        needClean = savedState.getBoolean( "needClean", needClean );
+    }
+
+    private void inverseClick( View view ) {
+        String result = tvResult.getText().toString() ;
+        double arg ;
+        try {
+            arg = Double.parseDouble( result
+                    .replace( minusSign, "-" )
+                    .replaceAll( zeroSymbol, "0" )
+                    .replace( decimalPoint, "." )
+            );
+        }
+        catch (NumberFormatException | NullPointerException ignored) {
+            Toast.makeText(
+                            this,
+                            R.string.calc_error_parse,
+                            Toast.LENGTH_SHORT)
+                    .show();
+            return;
+        }
+        tvHistory.setText( getString( R.string.calc_inverse_history, result ));
+        arg = 1 / arg;
+        needClean = true;
+        displayResult( arg );
+    }
+    private void squareClick( View view ) {
+        String result = tvResult.getText().toString() ;
+        double arg ;
+        try {
+            arg = Double.parseDouble( result
+                    .replace( minusSign, "-" )
+                    .replaceAll( zeroSymbol, "0" )
+                    .replace( decimalPoint, "." )
+            );
+        }
+        catch (NumberFormatException | NullPointerException ignored) {
+            Toast.makeText(
+                    this,
+                    R.string.calc_error_parse,
+                    Toast.LENGTH_SHORT)
+                .show();
+            return;
+        }
+        tvHistory.setText( getString( R.string.calc_square_history, result ));
+        arg *= arg;
+        needClean = true;
+        displayResult( arg );
+    }
+    private void clearClick( View view ) {
+        clearAll();
+    }
+    private void clearEditClick( View view ) {
+        displayResult( "" );
+    }
     private void decimalPointClick( View view ) {
         String result = tvResult.getText().toString() ;
         if( !result.endsWith( decimalPoint ) && !result.contains( decimalPoint ) ) {
@@ -61,24 +142,29 @@ public class CalcActivity extends AppCompatActivity {
         }
         else {
             result = minusSign + result;
-        };
+        }
         displayResult( result ) ;
     }
-
     private void backspaceClick( View view ) {
         String result = tvResult.getText().toString() ;
         int len = result.length();
         if( len > 0 ) {
             result = result.substring(0, len - 1);
         }
+        if( needClean ) {
+            clearAll();
+            return;
+        }
+
         displayResult( result ) ;
     }
 
     private void digitClick( View view ) {
         String result = tvResult.getText().toString() ;
         String digit = ( (Button) view ).getText().toString() ;
-        final int maxDigits = 10;
-        if( result.equals( zeroSymbol ) ) {
+        final int maxDigits = 9;
+        if( result.equals( zeroSymbol ) || needClean ) {
+            clearAll();
             result = "";
         }
         if( lengthOfDigits( result ) >= maxDigits ) {
@@ -106,6 +192,22 @@ public class CalcActivity extends AppCompatActivity {
         if( "".equals( result ) || minusSign.equals( result ) ) {
             result = zeroSymbol;
         }
+        result = result
+                .replace( ".", decimalPoint );
+
         tvResult.setText( result );
+    }
+    private void displayResult( double arg ) {
+        long argInt = (long) arg;
+        String result =  argInt == arg ? "" +  argInt : "" +  arg ;
+        result = result
+                .replace( "-", minusSign )
+                .replaceAll( "0", zeroSymbol );
+        displayResult( result );
+    }
+    private void clearAll() {
+        needClean = false;
+        tvHistory.setText("");
+        displayResult( "" );
     }
 }
