@@ -18,11 +18,16 @@ public class MainActivity extends AppCompatActivity {
         Button del_button = findViewById( R.id.del_button );
 
         findViewById( R.id.button_calc ).setOnClickListener( this::buttonCalcClick );
+        findViewById( R.id.button_game ).setOnClickListener( this::buttonGameClick );
         del_button.setOnClickListener( this::buttonDELClick );
     }
 
     private void buttonCalcClick( View view ) {
         Intent activityIntent = new Intent( MainActivity.this, CalcActivity.class );
+        startActivity( activityIntent );
+    }
+    private void buttonGameClick( View view ) {
+        Intent activityIntent = new Intent( MainActivity.this, GameActivity.class );
         startActivity( activityIntent );
     }
 
