@@ -3,15 +3,25 @@ package step.learning.course;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.graphics.drawable.Animatable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -24,10 +34,12 @@ public class GameActivity extends AppCompatActivity {
 
     private int score;
     private int bestScore;
+    private boolean continuePlaying;
     private TextView tvScore;
     private TextView tvBestScore;
 
     private Random random;
+    private final String BEST_SCORE_FILENAME = "best_score.txt";
 
     private Animation spawnAnimation;
     private Animation collapseAnimation;
@@ -146,7 +158,10 @@ public class GameActivity extends AppCompatActivity {
                 cells[i][j] = 0;
             }
         }
+        continuePlaying = false;
         score = 0;
+        loadBastScore();
+        tvBestScore.setText( getString( R.string.game_best_score, String.valueOf( bestScore ) ));
         spawnCell( 2 );
         showField();
     }
@@ -234,6 +249,14 @@ public class GameActivity extends AppCompatActivity {
             }
         }
         tvScore.setText( getString( R.string.game_score, String.valueOf( score ) ) );
+        if ( score > bestScore ) {
+            bestScore = score;
+            saveBestScore();
+            tvBestScore.setText( getString( R.string.game_best_score, String.valueOf( bestScore ) ));
+        }
+        if( score >= 8 && !continuePlaying ) {
+            showWinMessage();
+        }
     }
 
     private boolean spawnCell( int count ) {
@@ -433,6 +456,39 @@ public class GameActivity extends AppCompatActivity {
         return isMoved;
     }
 
+    private void saveBestScore() {
+        try( FileOutputStream fileStream = openFileOutput( BEST_SCORE_FILENAME, Context.MODE_PRIVATE ) ) {
+            DataOutputStream writer = new DataOutputStream( fileStream );
+            writer.writeInt( bestScore );
+            writer.flush();
+        } catch ( IOException ex ) {
+            Log.d("saveBestScore", ex.getMessage());
+        }
+    }
+    private void loadBastScore() {
+        try( FileInputStream fileStream = openFileInput( BEST_SCORE_FILENAME ) ) {
+            DataInputStream reader = new DataInputStream( fileStream );
+            bestScore = reader.readInt();
+
+        } catch ( IOException ex ) {
+            Log.d("loadBestScore", ex.getMessage());
+            bestScore = 0;
+        }
+    }
+    private void showWinMessage() {
+        new AlertDialog.Builder(this, androidx.appcompat.R.style.Theme_AppCompat_DayNight_Dialog )
+                .setTitle(R.string.game_win_dialog_title)
+                .setMessage(R.string.game_win_dialog_message)
+                .setIcon(android.R.drawable.btn_star)
+                .setCancelable( false )
+                .setPositiveButton( R.string.game_yes_dialog_button,
+                        ( dialog, button ) -> continuePlaying = true )
+                .setNegativeButton( R.string.game_exit_dialog_button,
+                        ( dialog, button ) -> finish() )
+                .setNeutralButton( R.string.game_new_dialog_button,
+                        ( dialog, button ) -> newGame() )
+                .show();
+    }
     private void saveField() {
         for (int i = 0; i < N; i++) {
             System.arraycopy( cells[i], 0, saves[i], 0, N );
