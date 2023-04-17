@@ -6,6 +6,7 @@
     <string name="button_calc_text">Calculator</string>
     <string name="button_del_name">DEL !</string>
     <string name="button_game_text">Game 2048</string>
+    <string name="button_chat_text">The Chat</string>
 
     <!--  Game 2048 Activity  -->
     <string name="game_score">score\n%s</string>

@@ -34,6 +34,14 @@
         android:layout_margin="30dp"
         android:textSize="20sp"
         android:text="@string/button_game_text"/>
+    <Button
+        android:id="@+id/button_chat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingVertical="10dp"
+        android:layout_margin="30dp"
+        android:textSize="20sp"
+        android:text="@string/button_chat_text"/>
 
     <Button
         android:id="@+id/del_button"
