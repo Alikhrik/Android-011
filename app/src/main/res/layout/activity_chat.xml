@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:background="@color/teal_700"
         android:orientation="horizontal"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -29,18 +30,36 @@
             android:id="@+id/chat_et_author"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cidrusni Gena"
-            android:textColor="@color/white" />
+            android:text="Gena"
+            android:textColor="@color/white"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end">
+            <ImageButton
+                android:id="@+id/chat_button_sync"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@android:drawable/ic_popup_sync" />
+        </LinearLayout>
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tv_chat"
+    <ScrollView
+        android:id="@+id/sv_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
+        <LinearLayout
+            android:id="@+id/chat_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+        </LinearLayout>
+    </ScrollView>
 
     <LinearLayout
         android:id="@+id/linearLayout3"
@@ -67,7 +86,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Доброго вечора"
-            android:textColor="@color/white" />
+            android:textColor="@color/white"/>
 
         <ImageButton
             android:id="@+id/chat_button_send"
