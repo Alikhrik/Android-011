@@ -41,7 +41,6 @@ public class ChatActivity extends AppCompatActivity {
     private LinearLayout chatContainer;
     private ScrollView svContainer;
     private List<ChatMessage> chatMessages = new ArrayList<>();
-    private String loadedContent;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +50,6 @@ public class ChatActivity extends AppCompatActivity {
         chatContainer = findViewById( R.id.chat_container );
         svContainer = findViewById( R.id.sv_container );
         findViewById( R.id.chat_button_send ).setOnClickListener( this::sendMessageClick );
-        findViewById( R.id.chat_button_sync ).setOnClickListener( this::syncMessagesClick );
 
         new Thread( this::getChatMessages ).start();
     }
@@ -147,6 +145,10 @@ public class ChatActivity extends AppCompatActivity {
     private void showChatMessages() {
 
         LinearLayout.LayoutParams marginOther = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        LinearLayout.LayoutParams messageWidth = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
@@ -155,11 +157,10 @@ public class ChatActivity extends AppCompatActivity {
         boolean wasNewMessage = false;
 
         for ( ChatMessage message : chatMessages ) {
-
             if( message.getView() != null )
                 continue;
-            Drawable otherBg = getDrawable(
-                    R.drawable.chat_msg_bg_other );
+
+            LinearLayout linearLayout = new LinearLayout( ChatActivity.this );
 
             TextView tvMessage = new TextView( ChatActivity.this );
             tvMessage.setText( message.toViewString() );
@@ -168,9 +169,20 @@ public class ChatActivity extends AppCompatActivity {
 
             tvMessage.setTextSize( 18 );
             tvMessage.setPadding( 10, 7, 15, 7 ) ;
-            tvMessage.setBackground( otherBg );
+            if( message.getAuthor().equals( etAuthor.getText().toString() ) ) {
+                Drawable myBg = getDrawable(
+                        R.drawable.chat_msg_bg_my );
+                tvMessage.setBackground( myBg );
+                linearLayout.setGravity( Gravity.END );
+            } else {
+                Drawable otherBg = getDrawable(
+                        R.drawable.chat_msg_bg_other );
+                tvMessage.setBackground( otherBg );
+                linearLayout.setGravity( Gravity.START );
+            }
 
-            chatContainer.addView( tvMessage, marginOther );
+            linearLayout.addView( tvMessage, messageWidth );
+            chatContainer.addView( linearLayout, marginOther );
             wasNewMessage = true;
         }
         if( wasNewMessage ) {
@@ -179,14 +191,6 @@ public class ChatActivity extends AppCompatActivity {
     }
     private void sendMessageClick( View view ) {
         new Thread( this::postChatMessage ).start();
-    }
-
-    private void syncMessagesClick( View view ) {
-        Drawable otherBg = getDrawable(
-                R.drawable.chat_msg_bg_other );
-        for ( ChatMessage message : chatMessages ) {
-            message.getView().setBackground( otherBg );
-        }
     }
 
     private static class ChatMessage {
