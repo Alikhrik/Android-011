@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Android-011</string>
-
     <!-- Main Activity -->
     <string name="title_text">Android basics</string>
     <string name="button_calc_text">Calculator</string>
@@ -53,4 +52,8 @@
     <string name="calc_minus_sign">\u2212</string>
     <string name="calc_plus_sign">\u2212</string>
     <string name="calc_decimal_point_sign">\u002C</string>
+
+    <!-- Chat Activity -->
+    <string name="chat_channel_name">Chat notification channel</string>
+    <string name="chat_channel_description">Android-011 App. Chat notification channel</string>
 </resources>
